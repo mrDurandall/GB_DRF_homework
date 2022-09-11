@@ -20,19 +20,6 @@ class App extends React.Component {
           }
       )
     }).catch(error => console.log(error))
-    // const users = [
-    //   {
-    //     'first_name': 'Фёдор',
-    //     'last_name': 'Достоевский',
-    //     'birthday_year': 1821
-    //   },
-    //   {
-    //     'first_name': 'Александр',
-    //     'last_name': 'Грин',
-    //     'birthday_year': 1880
-    //   },
-    // ]
-
   }
 
   render () {
