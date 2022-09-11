@@ -36,7 +36,9 @@ const UserList = ({users}) => {
             <th>
                 E-mail
             </th>
+
             {users.map((user) => <UserItem user={user} />)}
+
         </table>
     )
 }
