@@ -1,10 +1,13 @@
 from rest_framework.serializers import ModelSerializer
-from rest_framework.serializers import PrimaryKeyRelatedField
+from rest_framework.serializers import PrimaryKeyRelatedField,\
+    StringRelatedField
 
 from .models import Project, ToDo
 
 
 class ProjectSerializer(ModelSerializer):
+    
+    users = StringRelatedField(many=True)
 
     class Meta:
         model = Project
