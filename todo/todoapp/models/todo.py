@@ -1,12 +1,10 @@
 from django.db import models
 
-from . import Project
-
 
 class ToDo(models.Model):
 
     project = models.ForeignKey(
-        Project,
+        'todoapp.Project',
         related_name='projects',
         verbose_name='Проект',
         on_delete=models.CASCADE
