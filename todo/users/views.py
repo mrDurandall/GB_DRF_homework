@@ -17,4 +17,3 @@ class UserModelViewSet(ListModelMixin,
                        GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    
