@@ -2,7 +2,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import LimitOffsetPagination
-from django_filters.rest_framework import FilterSet, CharFilter
+from django_filters.rest_framework import (FilterSet,
+                                           CharFilter,
+                                           ModelChoiceFilter,
+                                           DateFromToRangeFilter)
 
 from .models import Project, ToDo
 from .serializers import ProjectSerializer, ToDoSerializer
@@ -31,11 +34,20 @@ class ToDoPagination(LimitOffsetPagination):
     default_limit = 20
 
 
+class ToDoFilter(FilterSet):
+    project = ModelChoiceFilter(queryset=Project.objects.all())
+    created_on = DateFromToRangeFilter()
+
+    class Meta:
+        model = ToDo
+        fields = ['project', 'created_on']
+
+
 class ToDoModelViewSet(ModelViewSet):
     queryset = ToDo.objects.all()
     serializer_class = ToDoSerializer
     pagination_class = ToDoPagination
-    filterset_fields = ('project',)
+    filterset_class = ToDoFilter
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
