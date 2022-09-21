@@ -7,3 +7,6 @@ class User(AbstractUser):
         verbose_name='e-mail',
         unique=True,
     )
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
