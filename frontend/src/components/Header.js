@@ -7,12 +7,12 @@ const HeaderItem = () => {
             <h2>
                 Заголовок!
             </h2>
-            <a href={'#'}>
-                Link 1
-            </a>
-            <a href={'#'}>
-                Link 2
-            </a>
+            {/*<a href={'#'}>*/}
+            {/*    Link 1*/}
+            {/*</a>*/}
+            {/*<a href={'#'}>*/}
+            {/*    Link 2*/}
+            {/*</a>*/}
             <hr/>
         </div>
     )

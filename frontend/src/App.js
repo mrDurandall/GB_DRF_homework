@@ -26,13 +26,14 @@ class App extends React.Component {
 
   render () {
     return (
-        <div className="wrapper">
-            <div className="container">
-                <HeaderItem />
-                <UserList users={this.state.users} />
+        <div>
+            {/*<div className="container">*/}
+            {/*    <HeaderItem />*/}
+            {/*    <UserList users={this.state.users} />*/}
 
-            </div>
-            <Footer />
+            {/*</div>*/}
+            {/*<Footer />*/}
+            <UserList users={this.state.users} />
         </div>
     )
   }
