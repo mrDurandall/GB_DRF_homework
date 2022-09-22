@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 
 const HeaderItem = () => {
@@ -13,6 +14,9 @@ const HeaderItem = () => {
             {/*<a href={'#'}>*/}
             {/*    Link 2*/}
             {/*</a>*/}
+            <Link to='/users'>Users</Link>
+            <Link to='/projects'>Projects</Link>
+            <Link to='/todos'>ToDo</Link>
             <hr/>
         </div>
     )
