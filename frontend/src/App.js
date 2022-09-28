@@ -7,6 +7,7 @@ import HeaderItem from "./components/Header";
 import Footer from "./components/Footer";
 import ProjectList from "./components/Project";
 import ToDoList from "./components/ToDo";
+import ProjectDetailed from "./components/ProjectDetailed";
 
 class App extends React.Component {
   constructor(props) {
@@ -46,21 +47,28 @@ class App extends React.Component {
   }
 
   render () {
+    console.log(this.state.projects)
+    console.log(this.state.todos)
     return (
         <div>
             <BrowserRouter>
                 <div className="container">
                     <HeaderItem />
                     <Routes>
-                        <Route path='users' element={ <UserList users={this.state.users} />} />
-                        <Route path='projects' element={ <ProjectList projects={this.state.projects} />} />
-                        <Route path='todos' element={ <ToDoList todos={this.state.todos} />} />
+                        <Route exact path='users' element={ <UserList users={this.state.users} />} />
+                        <Route path='projects'>
+                            <Route index element={ <ProjectList projects={this.state.projects} />} />
+                            <Route path=':projectId' element={<ProjectDetailed
+                                projects={this.state.projects}
+                                todos={this.state.todos}
+                            /> } />
+                        </Route>
+                        <Route exact path='todos' element={ <ToDoList todos={this.state.todos} />} />
                         <Route exact path='/' element={ <Navigate to='/projects' /> } />
                     </Routes>
                 </div>
             </BrowserRouter>
             <Footer />
-            {/*<UserList users={this.state.users} />*/}
         </div>
     )
   }
