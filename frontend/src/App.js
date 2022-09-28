@@ -1,7 +1,7 @@
 import './App.css';
 import React from "react";
 import axios from "axios";
-import {BrowserRouter, Route, Routes, Redirect} from "react-router-dom";
+import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
 import UserList from "./components/User";
 import HeaderItem from "./components/Header";
 import Footer from "./components/Footer";
@@ -55,6 +55,7 @@ class App extends React.Component {
                         <Route path='users' element={ <UserList users={this.state.users} />} />
                         <Route path='projects' element={ <ProjectList projects={this.state.projects} />} />
                         <Route path='todos' element={ <ToDoList todos={this.state.todos} />} />
+                        <Route exact path='/' element={ <Navigate to='/projects' /> } />
                     </Routes>
                 </div>
             </BrowserRouter>
