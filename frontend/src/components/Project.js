@@ -1,53 +1,48 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 
-const UserItem = ({user}) => {
+const ProjectItem = ({project}) => {
     return (
         <tr>
             <td>
-                {user.username}
+                <Link to={`/projects/${project.id}`}>{project.title}</Link>
             </td>
             <td>
-                {user.first_name}
+                {project.repo_link}
             </td>
             <td>
-                {user.last_name}
-            </td>
-            <td>
-                {user.email}
+                {project.users}
             </td>
         </tr>
     )
 }
 
 
-const UserList = ({users}) => {
+const ProjectList = ({projects}) => {
     return (
         <table>
             <thead>
                 <tr>
                     <th>
-                        Username
+                        Title
                     </th>
                     <th>
-                        First Name
+                        Repo Link
                     </th>
                     <th>
-                        Last Name
-                    </th>
-                    <th>
-                        E-mail
+                        Users
                     </th>
                 </tr>
             </thead>
 
             <tbody>
-                {users.map((user) => <UserItem user={user} />)}
+                {projects.map((project) => <ProjectItem project={project} />)}
             </tbody>
-            
+
         </table>
     )
 }
 
 
-export default UserList
+export default ProjectList
