@@ -22,6 +22,10 @@ from todoapp.views import (
     ProjectModelViewSet,
     ToDoModelViewSet,
 )
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView
+)
 
 
 router = DefaultRouter()
@@ -33,5 +37,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-token-auth/', views.obtain_auth_token),
     path('api-auth/', include('rest_framework.urls')),
+    path('api/JWToken/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/JWToken/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include(router.urls))
 ]
