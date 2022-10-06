@@ -47,6 +47,14 @@ class App extends React.Component {
     }).catch(error => console.log(error))
   }
 
+  get_token(username, password) {
+      axios.post('http://127.0.0.1:8000/api-token-auth/', {username: username, password: password}).then(
+          response => {
+              console.log(response.data)
+          }
+      ).catch(error => alert('Неверный логин или пароль'))
+  }
+
   render () {
     console.log(this.state.projects)
     console.log(this.state.todos)
@@ -65,7 +73,10 @@ class App extends React.Component {
                             /> } />
                         </Route>
                         <Route exact path='todos' element={ <ToDoList todos={this.state.todos} /> } />
-                        <Route exact path='login' element={ <LoginForm /> } />
+                        <Route exact path='login'
+                               element={ <LoginForm
+                                   get_token={(username, password) => this.get_token(username, password)}
+                               /> } />
                         <Route exact path='/' element={ <Navigate to='/projects' /> } />
                     </Routes>
                 </div>
