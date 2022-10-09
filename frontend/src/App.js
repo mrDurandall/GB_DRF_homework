@@ -19,14 +19,15 @@ class App extends React.Component {
       'users': [],
       'projects': [],
       'todos': [],
-      'token':''
+      'token': '',
+      'current_user': ''
     }
   }
 
   set_token(token) {
       const cookies = new Cookies()
       cookies.set('token', token)
-      this.setState({'token': token})
+      this.setState({'token': token}, ()=>this.load_data())
   }
 
   is_authenticated() {
@@ -35,27 +36,40 @@ class App extends React.Component {
 
   logout() {
       this.set_token('')
+      this.setState({'current_user': ''})
   }
 
   get_token_from_storage() {
       const cookies = new Cookies()
-      const token = cookies.get
-      this.setState({'token': token})
+      const token = cookies.get('token')
+      this.setState({'token': token}, ()=>this.load_data())
   }
 
   get_token(username, password) {
     axios.post('http://127.0.0.1:8000/api-token-auth/', {username: username, password: password}).then(
         response => {
             this.set_token(response.data['token'])
+            this.setState({'current_user': username})
         }
     ).catch(error => alert('Неверный логин или пароль'))
   }
 
-  componentDidMount() {
+  get_headers() {
+      let headers = {
+          'Content-Type': 'application/json'
+      }
 
-    this.get_token_from_storage()
+      if (this.is_authenticated())
+          {
+              headers['Authorization'] = 'Token ' + this.state.token
+          }
 
-    axios.get('http://127.0.0.1:8000/api/users').then(response => {
+      return headers
+  }
+
+  load_data() {
+      const headers = this.get_headers()
+          axios.get('http://127.0.0.1:8000/api/users', {headers}).then(response => {
       const users = response.data.results
       this.setState(
           {
@@ -64,7 +78,7 @@ class App extends React.Component {
       )
     }).catch(error => console.log(error))
 
-    axios.get('http://127.0.0.1:8000/api/projects').then(response => {
+    axios.get('http://127.0.0.1:8000/api/projects', {headers}).then(response => {
       const projects = response.data.results
       this.setState(
           {
@@ -73,7 +87,7 @@ class App extends React.Component {
       )
     }).catch(error => console.log(error))
 
-    axios.get('http://127.0.0.1:8000/api/todos').then(response => {
+    axios.get('http://127.0.0.1:8000/api/todos', {headers}).then(response => {
       const todos = response.data.results
       this.setState(
           {
@@ -81,6 +95,13 @@ class App extends React.Component {
           }
       )
     }).catch(error => console.log(error))
+    console.log(this.state)
+  }
+
+  componentDidMount() {
+
+    this.get_token_from_storage()
+
   }
 
   render () {
@@ -90,7 +111,7 @@ class App extends React.Component {
                 <div className="container">
                     <HeaderItem />
                     {this.is_authenticated() ?
-                        <button onClick={() => this.logout()}>Logout</button> :
+                        <button onClick={() => this.logout()}>Logout ({this.state.current_user})</button> :
                         <Link to={'/login'}>Login</Link>}
 
                     <Routes>
