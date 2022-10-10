@@ -8,6 +8,9 @@ import Footer from "./components/Footer";
 import ProjectList from "./components/Project";
 import ToDoList from "./components/ToDo";
 import ProjectDetailed from "./components/ProjectDetailed";
+import LoginForm from "./components/Authentication";
+import Cookies from "universal-cookie/es6";
+import {Link} from "react-router-dom";
 
 class App extends React.Component {
   constructor(props) {
@@ -15,12 +18,58 @@ class App extends React.Component {
     this.state = {
       'users': [],
       'projects': [],
-      'todos': []
+      'todos': [],
+      'token': '',
+      'current_user': ''
     }
   }
 
-  componentDidMount() {
-    axios.get('http://127.0.0.1:8000/api/users').then(response => {
+  set_token(token) {
+      const cookies = new Cookies()
+      cookies.set('token', token)
+      this.setState({'token': token}, ()=>this.load_data())
+  }
+
+  is_authenticated() {
+      return this.state.token != ''
+  }
+
+  logout() {
+      this.set_token('')
+      this.setState({'current_user': ''})
+  }
+
+  get_token_from_storage() {
+      const cookies = new Cookies()
+      const token = cookies.get('token')
+      this.setState({'token': token}, ()=>this.load_data())
+  }
+
+  get_token(username, password) {
+    axios.post('http://127.0.0.1:8000/api-token-auth/', {username: username, password: password}).then(
+        response => {
+            this.set_token(response.data['token'])
+            this.setState({'current_user': username})
+        }
+    ).catch(error => alert('Неверный логин или пароль'))
+  }
+
+  get_headers() {
+      let headers = {
+          'Content-Type': 'application/json'
+      }
+
+      if (this.is_authenticated())
+          {
+              headers['Authorization'] = 'Token ' + this.state.token
+          }
+
+      return headers
+  }
+
+  load_data() {
+      const headers = this.get_headers()
+          axios.get('http://127.0.0.1:8000/api/users', {headers}).then(response => {
       const users = response.data.results
       this.setState(
           {
@@ -28,7 +77,8 @@ class App extends React.Component {
           }
       )
     }).catch(error => console.log(error))
-    axios.get('http://127.0.0.1:8000/api/projects').then(response => {
+
+    axios.get('http://127.0.0.1:8000/api/projects', {headers}).then(response => {
       const projects = response.data.results
       this.setState(
           {
@@ -36,7 +86,8 @@ class App extends React.Component {
           }
       )
     }).catch(error => console.log(error))
-    axios.get('http://127.0.0.1:8000/api/todos').then(response => {
+
+    axios.get('http://127.0.0.1:8000/api/todos', {headers}).then(response => {
       const todos = response.data.results
       this.setState(
           {
@@ -44,28 +95,42 @@ class App extends React.Component {
           }
       )
     }).catch(error => console.log(error))
+    console.log(this.state)
+  }
+
+  componentDidMount() {
+
+    this.get_token_from_storage()
+
   }
 
   render () {
-    console.log(this.state.projects)
-    console.log(this.state.todos)
     return (
         <div>
             <BrowserRouter>
                 <div className="container">
                     <HeaderItem />
+                    {this.is_authenticated() ?
+                        <button onClick={() => this.logout()}>Logout ({this.state.current_user})</button> :
+                        <Link to={'/login'}>Login</Link>}
+
                     <Routes>
-                        <Route exact path='users' element={ <UserList users={this.state.users} />} />
+                        <Route exact path='users' element={ <UserList users={this.state.users} /> } />
                         <Route path='projects'>
-                            <Route index element={ <ProjectList projects={this.state.projects} />} />
+                            <Route index element={ <ProjectList projects={this.state.projects} /> } />
                             <Route path=':projectId' element={<ProjectDetailed
                                 projects={this.state.projects}
                                 todos={this.state.todos}
                             /> } />
                         </Route>
-                        <Route exact path='todos' element={ <ToDoList todos={this.state.todos} />} />
+                        <Route exact path='todos' element={ <ToDoList todos={this.state.todos} /> } />
+                        <Route exact path='login'
+                               element={ <LoginForm
+                                   get_token={(username, password) => this.get_token(username, password)}
+                               /> } />
                         <Route exact path='/' element={ <Navigate to='/projects' /> } />
                     </Routes>
+
                 </div>
             </BrowserRouter>
             <Footer />
