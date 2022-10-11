@@ -32,7 +32,11 @@ class TestProjectModelViewSet(TestCase):
             title=self.project_data['title'],
             repo_link=self.project_data['repo_link']
         )
-        self.admin = User.objects.create_superuser(self.login, self.email, self.password)
+        self.admin = User.objects.create_superuser(
+            self.login,
+            self.email,
+            self.password
+        )
 
     def test_get_projects_list(self):
         factory = APIRequestFactory()
@@ -68,8 +72,10 @@ class TestProjectModelViewSet(TestCase):
             self.project_data_new,
             format=self.format,
         )
-        print(response.data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
 
     def test_authorized_update_project(self):
         client = APIClient()
@@ -87,3 +93,73 @@ class TestProjectModelViewSet(TestCase):
         self.assertEqual(self.project.title, self.project_data_new.get('title'))
         self.assertEqual(self.project.repo_link, self.project_data_new.get('repo_link'))
         client.logout()
+
+
+class TestToDoModelViewSet(APITestCase):
+
+    def setUp(self):
+        self.url = '/api/todos/'
+        self.format = 'json'
+        self.login = 'super'
+        self.email = 'super@mail.com'
+        self.password = 'qwaszx'
+        self.admin = User.objects.create_superuser(
+            self.login,
+            self.email,
+            self.password
+        )
+        self.todo = mixer.blend(ToDo)
+        self.project = mixer.blend(Project)
+        self.new_todo_data = {
+            'project': self.project.id,
+            'text': 'new todo data text',
+        }
+
+    def test_unauthorized_todo_list(self):
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_authorized_todo_list(self):
+        self.client.login(
+            username=self.login,
+            password=self.password,
+        )
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+    def test_todo_create(self):
+        self.client.login(
+            username=self.login,
+            password=self.password,
+        )
+        response = self.client.post(
+            self.url,
+            {
+                'project': self.project.id,
+                'text': 'lorem ipsum'
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+        )
+
+    def test_todo_update(self):
+        self.client.login(
+            username=self.login,
+            password=self.password,
+        )
+        response = self.client.put(
+            f'{self.url}{self.todo.id}/',
+            self.new_todo_data,
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
