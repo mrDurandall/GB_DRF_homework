@@ -39,5 +39,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/JWToken/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/JWToken/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/users/v1', include('users.urls', namespace='v1')),
+    path('api/users/v2', include('users.urls', namespace='v2')),
 ]
