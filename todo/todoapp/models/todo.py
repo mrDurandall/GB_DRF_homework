@@ -5,7 +5,7 @@ class ToDo(models.Model):
 
     project = models.ForeignKey(
         'todoapp.Project',
-        related_name='projects',
+        related_name='todos',
         verbose_name='Проект',
         on_delete=models.CASCADE
     )
