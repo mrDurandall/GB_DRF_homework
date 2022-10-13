@@ -7,7 +7,8 @@ from .models import Project, ToDo
 
 class ProjectSerializer(ModelSerializer):
     
-    users = StringRelatedField(many=True)
+    # users = StringRelatedField(many=True)
+    project = PrimaryKeyRelatedField
 
     class Meta:
         model = Project

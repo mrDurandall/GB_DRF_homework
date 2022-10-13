@@ -20,6 +20,7 @@ class Project(models.Model):
     users = models.ManyToManyField(
         User,
         blank=True,
+        null=True,
         verbose_name='Пользователи'
     )
 
