@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'drf_yasg',
+    'graphene_django',
     'todoapp',
     'users',
 ]
@@ -177,4 +178,8 @@ REST_FRAMEWORK = {
 
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
 
+}
+
+GRAPHENE = {
+    'SCHEMA': 'todoapp.schema.schema',
 }
