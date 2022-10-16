@@ -25,9 +25,10 @@ class App extends React.Component {
     }
   }
 
-  set_token(token) {
+  set_token(token, username) {
       const cookies = new Cookies()
       cookies.set('token', token)
+      cookies.set('current_user', username)
       this.setState({'token': token}, ()=>this.load_data())
   }
 
@@ -43,13 +44,14 @@ class App extends React.Component {
   get_token_from_storage() {
       const cookies = new Cookies()
       const token = cookies.get('token')
-      this.setState({'token': token}, ()=>this.load_data())
+      const current_user = cookies.get('current_user')
+      this.setState({'token': token, 'current_user': current_user}, ()=>this.load_data())
   }
 
   get_token(username, password) {
     axios.post('http://127.0.0.1:8000/api-token-auth/', {username: username, password: password}).then(
         response => {
-            this.set_token(response.data['token'])
+            this.set_token(response.data['token'], username)
             this.setState({'current_user': username})
         }
     ).catch(error => alert('Неверный логин или пароль'))
