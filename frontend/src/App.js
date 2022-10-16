@@ -68,6 +68,23 @@ class App extends React.Component {
       return headers
   }
 
+  createProject (title, repo_link, users) {
+      const headers = this.get_headers()
+      const data = {
+          title: title,
+          repo_link: repo_link,
+          users: users
+      }
+      axios.post(
+          `http://127.0.0.1:8000/api/projects/`,
+          data,
+          {headers}
+      ).then(response => {
+          let new_project = response.data
+          this.setState({projects: [...this.state.projects, new_project]})
+      }).catch(error => console.log(error))
+  }
+
   load_data() {
       const headers = this.get_headers()
           axios.get('http://127.0.0.1:8000/api/users', {headers}).then(response => {
@@ -128,7 +145,8 @@ class App extends React.Component {
                                 projects={this.state.projects}
                                 deleteProject={(id)=>this.deleteProject(id)}
                             /> } />
-                            <Route path='create' element={<ProjectForm/>}/>
+                            <Route path='create' element={<ProjectForm
+                                createProject={(title, repo_link, users) => this.createProject(title, repo_link, users)} />}/>
                             <Route path=':projectId' element={<ProjectDetailed
                                 projects={this.state.projects}
                                 todos={this.state.todos}
