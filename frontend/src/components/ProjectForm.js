@@ -19,8 +19,21 @@ class ProjectForm extends React.Component {
         );
     }
 
+    handleUsersChange (event) {
+        let options = event.target.options;
+        let users = [];
+        for (let i = 0, l = options.length; i < l; i++) {
+            if (options[i].selected) {
+                users.push(parseInt(options[i].value));
+                }
+            }
+        this.setState({users: users})
+    }
+
     handleSubmit (event) {
         this.props.createProject(this.state.title, this.state.repo_link, this.state.users)
+        console.log(this.state.users)
+        console.log(this.props.users)
     }
 
     render () {
@@ -47,16 +60,18 @@ class ProjectForm extends React.Component {
                     />
                 </div>
 
-                {/*<div className="form-group">*/}
-                {/*    <label htmlFor="users">Users</label>*/}
-                {/*    <input*/}
-                {/*        type="number"*/}
-                {/*        className="form-control"*/}
-                {/*        name="users"*/}
-                {/*        value={this.state.users}*/}
-                {/*        onChange={(event) => this.handleChange(event)}*/}
-                {/*    />*/}
-                {/*</div>*/}
+                <div className="form-group">
+                    <label htmlFor="users">Users</label>
+                    <select
+                        className="form-control"
+                        name="users"
+                        multiple={true}
+                        onChange={(event) => this.handleUsersChange(event)}
+                    >
+                        {this.props.users.map((item) => <option value={item.id}>{item.username}</option>)}
+
+                    </select>
+                </div>
 
                 <input type="submit" className="btn btn-primary" value="Save" />
             </form>

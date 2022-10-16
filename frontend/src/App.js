@@ -146,6 +146,7 @@ class App extends React.Component {
                                 deleteProject={(id)=>this.deleteProject(id)}
                             /> } />
                             <Route path='create' element={<ProjectForm
+                                users={this.state.users}
                                 createProject={(title, repo_link, users) => this.createProject(title, repo_link, users)} />}/>
                             <Route path=':projectId' element={<ProjectDetailed
                                 projects={this.state.projects}
