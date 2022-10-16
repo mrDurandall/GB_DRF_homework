@@ -11,6 +11,7 @@ import ProjectDetailed from "./components/ProjectDetailed";
 import LoginForm from "./components/Authentication";
 import Cookies from "universal-cookie/es6";
 import {Link} from "react-router-dom";
+import ProjectForm from "./components/ProjectForm";
 
 class App extends React.Component {
   constructor(props) {
@@ -95,7 +96,6 @@ class App extends React.Component {
           }
       )
     }).catch(error => console.log(error))
-    console.log(this.state)
   }
 
   componentDidMount() {
@@ -128,6 +128,7 @@ class App extends React.Component {
                                 projects={this.state.projects}
                                 deleteProject={(id)=>this.deleteProject(id)}
                             /> } />
+                            <Route path='create' element={<ProjectForm/>}/>
                             <Route path=':projectId' element={<ProjectDetailed
                                 projects={this.state.projects}
                                 todos={this.state.todos}
