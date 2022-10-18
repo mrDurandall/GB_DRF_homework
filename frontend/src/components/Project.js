@@ -27,6 +27,9 @@ const ProjectItem = ({project, deleteProject}) => {
 const ProjectList = ({projects, deleteProject}) => {
     return (
         <div>
+
+            <Link to="/projects/search">Search project</Link>
+            
             <table>
                 <thead>
                     <tr>

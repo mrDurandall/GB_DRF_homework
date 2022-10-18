@@ -1,7 +1,7 @@
 import './App.css';
 import React from "react";
 import axios from "axios";
-import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
+import {BrowserRouter, Route, Routes, Navigate, useNavigate} from "react-router-dom";
 import UserList from "./components/User";
 import HeaderItem from "./components/Header";
 import Footer from "./components/Footer";
@@ -13,6 +13,8 @@ import Cookies from "universal-cookie/es6";
 import {Link} from "react-router-dom";
 import ProjectForm from "./components/ProjectForm";
 import ToDoForm from "./components/ToDoForm";
+import ProjectSearchForm from "./components/ProjectSearchForm";
+
 
 class App extends React.Component {
   constructor(props) {
@@ -131,6 +133,11 @@ class App extends React.Component {
       }).catch(error => console.log(error))
   }
 
+  searchProject (part_title) {
+      this.setState({projects: this.state.projects.filter((item) => item.title.indexOf(part_title) !== -1)})
+
+  }
+
   deleteToDo (id) {
       const headers = this.get_headers()
       axios.delete(`http://127.0.0.1:8000/api/todos/${id}`, {headers}).then(
@@ -168,20 +175,28 @@ class App extends React.Component {
 
                     <Routes>
                         <Route exact path='users' element={ <UserList users={this.state.users} /> } />
+
                         <Route path='projects'>
                             <Route index element={ <ProjectList
                                 projects={this.state.projects}
                                 deleteProject={(id)=>this.deleteProject(id)}
+
+                            /> } />
+                            <Route path='search' element={ <ProjectSearchForm
+                                projects={this.state.projects}
+                                searchProject = {(part_title) => this.searchProject(part_title)}
                             /> } />
                             <Route path='create' element={<ProjectForm
                                 users={this.state.users}
-                                createProject={(title, repo_link, users) => this.createProject(title, repo_link, users)} />}/>
+                                createProject={(title, repo_link, users) => this.createProject(title, repo_link, users)}
+                            /> } />
                             <Route path=':projectId' element={<ProjectDetailed
                                 projects={this.state.projects}
                                 todos={this.state.todos}
                                 deleteProject={(id)=>this.deleteProject(id)}
                             /> } />
                         </Route>
+
                         <Route path='todos'>
                             <Route index element={ <ToDoList
                                 todos={this.state.todos}
@@ -192,6 +207,7 @@ class App extends React.Component {
                                 createToDo={(text, project) => this.createToDo(text, project)}
                             />}/>
                         </Route>
+
                         <Route exact path='login'
                                element={ <LoginForm
                                    get_token={(username, password) => this.get_token(username, password)}
