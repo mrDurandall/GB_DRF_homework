@@ -31,7 +31,7 @@ services:
       && python manage.py create_test_users
       && python manage.py create_test_projects
       && python manage.py create_test_todos
-      && python manage.py runserver 0.0.0.0:8080
+      && gunicorn todo.wsgi -b 0.0.0.0:8080
       "
     depends_on:
       - db
