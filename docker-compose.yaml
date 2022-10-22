@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13.7
+    privileged: true
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: todos
+      POSTGRES_USER: IvanT
+      POSTGRES_PASSWORD: qwaszx
+
+  adminer:
+    image: adminer:4.7.8-standalone
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+       
