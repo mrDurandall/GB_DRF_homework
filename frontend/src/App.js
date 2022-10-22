@@ -1,7 +1,7 @@
 import './App.css';
 import React from "react";
 import axios from "axios";
-import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
+import {BrowserRouter, Route, Routes, Navigate, useNavigate} from "react-router-dom";
 import UserList from "./components/User";
 import HeaderItem from "./components/Header";
 import Footer from "./components/Footer";
@@ -11,6 +11,10 @@ import ProjectDetailed from "./components/ProjectDetailed";
 import LoginForm from "./components/Authentication";
 import Cookies from "universal-cookie/es6";
 import {Link} from "react-router-dom";
+import ProjectForm from "./components/ProjectForm";
+import ToDoForm from "./components/ToDoForm";
+import ProjectSearchForm from "./components/ProjectSearchForm";
+
 
 class App extends React.Component {
   constructor(props) {
@@ -24,9 +28,10 @@ class App extends React.Component {
     }
   }
 
-  set_token(token) {
+  set_token(token, username) {
       const cookies = new Cookies()
       cookies.set('token', token)
+      cookies.set('current_user', username)
       this.setState({'token': token}, ()=>this.load_data())
   }
 
@@ -42,13 +47,14 @@ class App extends React.Component {
   get_token_from_storage() {
       const cookies = new Cookies()
       const token = cookies.get('token')
-      this.setState({'token': token}, ()=>this.load_data())
+      const current_user = cookies.get('current_user')
+      this.setState({'token': token, 'current_user': current_user}, ()=>this.load_data())
   }
 
   get_token(username, password) {
     axios.post('http://127.0.0.1:8000/api-token-auth/', {username: username, password: password}).then(
         response => {
-            this.set_token(response.data['token'])
+            this.set_token(response.data['token'], username)
             this.setState({'current_user': username})
         }
     ).catch(error => alert('Неверный логин или пароль'))
@@ -95,13 +101,66 @@ class App extends React.Component {
           }
       )
     }).catch(error => console.log(error))
-    console.log(this.state)
   }
 
   componentDidMount() {
 
     this.get_token_from_storage()
 
+  }
+
+  deleteProject (id) {
+      const headers = this.get_headers()
+      axios.delete(`http://127.0.0.1:8000/api/projects/${id}`, {headers}).then(
+          response => {this.setState({projects: this.state.projects.filter((item) => item.id !== id)})}
+      ).catch(error => console.log(error))
+  }
+
+  createProject (title, repo_link, users) {
+      const headers = this.get_headers()
+      const data = {
+          title: title,
+          repo_link: repo_link,
+          users: users
+      }
+      axios.post(
+          `http://127.0.0.1:8000/api/projects/`,
+          data,
+          {headers}
+      ).then(response => {
+          let new_project = response.data
+          this.setState({projects: [...this.state.projects, new_project]})
+      }).catch(error => console.log(error))
+  }
+
+  searchProject (part_title) {
+      this.setState({projects: this.state.projects.filter((item) => item.title.indexOf(part_title) !== -1)})
+
+  }
+
+  deleteToDo (id) {
+      const headers = this.get_headers()
+      axios.delete(`http://127.0.0.1:8000/api/todos/${id}`, {headers}).then(
+          response => {}
+      ).catch(error => console.log(error))
+  }
+
+  createToDo (text, project) {
+      const headers = this.get_headers()
+      const data = {
+          text: text,
+          project: project,
+          is_active: true
+      }
+      console.log(data)
+      axios.post(
+          `http://127.0.0.1:8000/api/todos/`,
+          data,
+          {headers}
+      ).then(response => {
+          let new_todo = response.data
+          this.setState({todos: [...this.state.todos, new_todo]})
+      }).catch(error => console.log(error))
   }
 
   render () {
@@ -116,14 +175,39 @@ class App extends React.Component {
 
                     <Routes>
                         <Route exact path='users' element={ <UserList users={this.state.users} /> } />
+
                         <Route path='projects'>
-                            <Route index element={ <ProjectList projects={this.state.projects} /> } />
+                            <Route index element={ <ProjectList
+                                projects={this.state.projects}
+                                deleteProject={(id)=>this.deleteProject(id)}
+
+                            /> } />
+                            <Route path='search' element={ <ProjectSearchForm
+                                projects={this.state.projects}
+                                searchProject = {(part_title) => this.searchProject(part_title)}
+                            /> } />
+                            <Route path='create' element={<ProjectForm
+                                users={this.state.users}
+                                createProject={(title, repo_link, users) => this.createProject(title, repo_link, users)}
+                            /> } />
                             <Route path=':projectId' element={<ProjectDetailed
                                 projects={this.state.projects}
                                 todos={this.state.todos}
+                                deleteProject={(id)=>this.deleteProject(id)}
                             /> } />
                         </Route>
-                        <Route exact path='todos' element={ <ToDoList todos={this.state.todos} /> } />
+
+                        <Route path='todos'>
+                            <Route index element={ <ToDoList
+                                todos={this.state.todos}
+                                deleteToDo={(id)=>this.deleteToDo(id)}
+                            /> } />
+                            <Route path='create' element={<ToDoForm
+                                projects={this.state.projects}
+                                createToDo={(text, project) => this.createToDo(text, project)}
+                            />}/>
+                        </Route>
+
                         <Route exact path='login'
                                element={ <LoginForm
                                    get_token={(username, password) => this.get_token(username, password)}

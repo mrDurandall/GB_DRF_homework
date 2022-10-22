@@ -11,7 +11,7 @@ const ToDo = ({todo}) => {
 }
 
 
-const ProjectDetailed = ({projects, todos}) => {
+const ProjectDetailed = ({projects, todos, deleteProject}) => {
     let {projectId} = useParams()
     let current_project = projects.filter( project => project.id == projectId)[0]
     let current_project_todos = todos.filter( todo => todo.project == projectId)
@@ -22,6 +22,9 @@ const ProjectDetailed = ({projects, todos}) => {
             <ul>
                 {current_project_todos.map((todo) => <ToDo todo={todo} />)}
             </ul>
+            <button type='button' onClick={()=>deleteProject(projectId)}>
+                Delete
+            </button>
         </div>
     )
 }

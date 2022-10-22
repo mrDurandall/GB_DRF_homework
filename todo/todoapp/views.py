@@ -53,5 +53,6 @@ class ToDoModelViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.is_active = False
+        instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)

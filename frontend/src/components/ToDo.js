@@ -1,7 +1,15 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 
-const ToDoItem = ({todo}) => {
+const ToDoItem = ({todo, deleteToDo}) => {
+    let active = ''
+    if (todo.is_active) {
+        active = 'active'
+    } else {
+        active = 'closed'
+    }
+
     return (
         <tr>
             <td>
@@ -17,15 +25,21 @@ const ToDoItem = ({todo}) => {
                 {todo.updated_on}
             </td>
             <td>
-                {todo.is_active}
+                {active}
+            </td>
+            <td>
+                <button type='button' onClick={() => deleteToDo(todo.id)}>
+                    Close
+                </button>
             </td>
         </tr>
     )
 }
 
 
-const ToDoList = ({todos}) => {
+const ToDoList = ({todos, deleteToDo}) => {
     return (
+        <div>
         <table>
             <thead>
                 <tr>
@@ -44,14 +58,19 @@ const ToDoList = ({todos}) => {
                     <th>
                         Is Active
                     </th>
+                    <th>
+
+                    </th>
                 </tr>
             </thead>
 
             <tbody>
-                {todos.map((todo) => <ToDoItem todo={todo} />)}
+                {todos.map((todo) => <ToDoItem todo={todo} deleteToDo={deleteToDo}/>)}
             </tbody>
 
         </table>
+        <Link to="/projects/create">Create new project</Link>
+        </div>
     )
 }
 
