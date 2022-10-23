@@ -1,0 +1,52 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13.7
+    privileged: true
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: todos
+      POSTGRES_USER: IvanT
+      POSTGRES_PASSWORD: qwaszx
+
+  adminer:
+    image: adminer:4.7.8-standalone
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+
+  backend:
+    build:
+      context: ./todo
+    expose:
+      - 8080
+    command: bash -c "
+      ./wait-for-postgres.sh db
+      && python manage.py migrate
+      && python manage.py create_test_users
+      && python manage.py create_test_projects
+      && python manage.py create_test_todos
+      && gunicorn todo.wsgi -b 0.0.0.0:8080
+      "
+    depends_on:
+      - db
+      
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - '8000:80'
+    depends_on:
+      - backend
+  
+  frontend:
+    build: ./frontend
+    ports:
+      - '80:80'
+    depends_on:
+      - nginx   
